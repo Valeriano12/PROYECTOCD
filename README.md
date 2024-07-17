@@ -1,11 +1,11 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
+Autor: Alberto Brun Gascón
 ---
 # PROYECTOCD
 La base de datos se ha obtenido de la Encuesta Social Europea (ESS). Este organismo es una infraestructura de investigación europea que proporciona datos de libre acceso para académicos, responsables políticos y la sociedad civil. 
+
 **Nombre de archivo de datos**: ESS10 Autocomplejo - archivo integrado, edición 3.1
+
 **Dirección del archivo**: doi:10.21338/esss10sce03o1
 
 ##Descripción de las vairables seleccionadas
