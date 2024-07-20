@@ -58,7 +58,7 @@ datos$noticias_internet <- round(datos$noticias_internet,2)
 datos$noticias_internet[datos$noticias_internet>24]<-NA
 
 #Establecemos los NAs para las dos VV sobre el tiempo de uso de Internet en minutos. 
-#(11440 min = 24 horas).
+#(1440 min = 24 horas).
 
 datos$netustm[datos$netustm>1440]<-NA #"Tiempo de uso de Internet"
 datos$nwspol[datos$nwspol>1440]<-NA   #"Tiempo de uso de Internet para ver Noticias"
