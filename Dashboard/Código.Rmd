@@ -1,0 +1,413 @@
+---
+title: "Dashboard"
+author: "Alberto Brun"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    social: menu
+    source_code: embed
+    runtime: shiny
+---
+
+```{r setup, include=FALSE}
+if(!require("knitr")) {install.packages("knitr")
+        library(knitr)}
+
+if(!require("ggplot2")) {install.packages("ggplot2")
+        library(ggplot2)}
+
+if(!require("RColorBrewer")) {install.packages("RColorBrewer")
+        library(RColorBrewer)}
+
+if(!require("flexdashboard")) {install.packages("flexdashboard") 
+  library(flexdashboard)}
+
+if(!require(dplyr)) {install.packages("dplyr")
+  library(dplyr)}
+
+if(!require("tidyverse")) {install.packages("tidyverse")
+        library(tidyverse)}
+
+if(!require("maps")) {install.packages("maps")
+        library(maps)}
+
+if(!require("DT")) {install.packages("DT")
+        library(DT)}
+
+if(!require("lorem")) {install.packages("lorem")
+        library(lorem)}
+
+if(!require("htmltools")) {install.packages("htmltools")
+        library(htmltools)}
+
+if(!require("shiny")) {install.packages("shiny")
+        library(shiny)}
+
+```
+
+```{r message=FALSE}
+BD_depurada <- read_csv("BD_depurada.csv")
+BD_depurada <- subset(BD_depurada, !is.na(gndr))
+```
+Consumo Internet {data-icon="fa-signal"}
+=============================================================
+## Column {data-width="350"}
+
+### Edad
+
+```{r}
+# Se agrupan los datos por décadas
+      datos <- BD_depurada  %>%
+        mutate(decada = floor(agea / 10) * 10) %>%
+        group_by(decada) %>%
+        summarise(horas_internet = mean(horas_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos <- datos[!is.na(datos$decada), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos$decada <- as.numeric(datos$decada)
+      
+#Generamos el gráfico
+ggplot(datos, aes(x = decada, y = horas_internet)) +
+geom_line(color = "brown", size= 1.2) +
+labs(title = "Consumo Medio de Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA), panel.grid.minor = element_blank(), axis.title = element_text(size = 14), axis.text = element_text(size = 12), plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+## Column {data-width="350"}
+
+### Género
+
+```{r}
+
+data1 <- data.frame(
+  Genero = c("Hombres", "Mujeres"),
+  Consumo_medio = c(4.85, 4.78)  # Horas promedio al día
+)
+
+ggplot(data1, aes(x = Genero, y = Consumo_medio, fill = Genero)) +
+geom_bar(stat = "identity") + 
+geom_text(aes(label = Consumo_medio), vjust = -0.5) +
+labs(title = "Consumo medio de Internet al día, según Género. Año 2023",
+       x = "Género",
+       y = "Horas") +
+theme_minimal() + 
+theme(plot.title = element_text(hjust = 0.5, face = "bold"), axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        axis.text.y = element_text(size = 14),
+        legend.text = element_text(size = 14)) +  
+scale_fill_brewer(palette = "Set3")
+      
+
+```
+
+### Nivel educativo
+
+```{r}
+data2 <- data.frame(
+  Nivel_Educativo = c("Primaria", "Secundaria Inferior", "Secundaria Superior", "Bachiller", "Formación Profesional", "Grado Universitario", "Máster/Doctorado"),
+  Consumo_Medio_Internet = c(4.04, 4.61, 3.51, 5.56, 4.45, 5.73, 5.41)) #Consumo medio de horas por N.educativo.
+
+data2$Nivel_Educativo <- factor(data2$Nivel_Educativo, levels = unique(data2$Nivel_Educativo))
+
+#Creamos el gráfico
+ggplot(data2, aes(x = Nivel_Educativo, y = Consumo_Medio_Internet, fill = as.numeric(Nivel_Educativo))) + geom_text(aes(label = Consumo_Medio_Internet), vjust = -0.2)+
+geom_bar(stat = "identity") +
+        scale_fill_gradient(low = "blue", high = "darkblue", 
+                            name = NULL, 
+                            labels = NULL) +
+labs(title = "Consumo de Internet en relación al Nivel Educativo. Año 2023",
+             x = NULL,
+             y = "Horas") +
+theme_minimal() + theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15),legend.position = "none")
+
+```
+
+```{r message=FALSE}
+```
+
+Consumo noticias {data-icon="fa-signal"}
+=================================================
+## Column {data-width="350"} 
+
+### Edad
+```{r}
+# Se agrupan los datos por décadas
+      datos2 <- BD_depurada  %>%
+      mutate(decada2 = floor(agea / 10) * 10) %>%
+      group_by(decada2) %>%  summarise(noticias_internet =        mean(noticias_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos2 <- datos2[!is.na(datos2$decada2), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos2$decada2 <- as.numeric(datos2$decada2)
+      
+#Generamos el gráfico
+      ggplot(datos2, aes(x = decada2, y = noticias_internet)) +
+        geom_line(color = "brown", size= 1.2) +
+        labs(title = "Consumo de Noticias en Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA),panel.grid.minor = element_blank(), axis.title = element_text(size = 14),axis.text = element_text(size = 12),plot.title = element_text(hjust = 0.5, face = "bold"))
+      
+
+```
+
+## Column {data-width="350"}
+
+### Género
+```{r}
+data3 <- data.frame(
+  Genero = c("Hombres", "Mujeres"),
+  Consumo_Noticias = c(1.50, 1.36)  # Horas promedio al día
+)
+
+ggplot(data3, aes(x = Genero, y = Consumo_Noticias, fill = Genero)) +
+  geom_bar(stat = "identity") + 
+  geom_text(aes(label = Consumo_Noticias), vjust = -0.5) +
+  labs(title = "Consumo de Noticiasen Internet,según género 2023",
+       x = "Género",
+       y = "Horas al día") +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        axis.text.y = element_text(size = 14),
+        legend.text = element_text(size = 14)) +  
+  scale_fill_brewer(palette = "Set3")
+
+```
+
+### Nivel Educativo 
+
+```{r}
+
+data4 <- data.frame(
+  Nivel_Educativo_N = c("Primaria", "Secundaria Inferior", "Secundaria Superior", "Bachiller", "Formación Profesional", "Grado Universitario", "Máster/Doctorado"),
+  Consumo_Medio_Noticias = c(1.75, 1.43, 1.41, 1.29, 1.45, 1.41, 1.45)) #Consumo medio de noticias en Internet según N.educativo.
+
+data4$Nivel_Educativo_N <- factor(data4$Nivel_Educativo_N, levels = unique(data4$Nivel_Educativo_N))
+
+#Creamos el gráfico
+ggplot(data4, aes(x = Nivel_Educativo_N, y = Consumo_Medio_Noticias, fill = as.numeric(Nivel_Educativo_N))) + geom_text(aes(label = Consumo_Medio_Noticias), vjust = -0.2)+
+        geom_bar(stat = "identity") +
+scale_fill_gradient(low = "blue", high = "darkblue", 
+                            name = NULL, 
+                            labels = NULL) +
+labs(title = "Consumo de Noticias en Internet según N. Educativo 2023",
+             x = NULL,
+             y = "Horas al día") +
+theme_minimal() + theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15),legend.position = "none")
+
+```
+
+```{r message=FALSE}
+
+```
+
+Confianza {data-icon="fa-signal"}
+=============================================================
+## Column {data-width="350"} {.tabset}
+
+### Confianza en los Políticos
+
+```{r message=FALSE}
+data_confianza <- data.frame(
+        country = c("Austria", "Cyprus", "Germany", 
+                    "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+        confianza_media = c(3.76, 3.02, 1.93, 1.94, 2.41, 2.21, 1.88, 2.38, 4.10 )) 
+      
+# Obtener datos del mapa mundial
+europe <- map_data("world", region = c("Austria","Cyprus", "Germany", "Spain","Israel", "Latvia", "Poland",   "Serbia", "Sweden", "France", "Italy","Netherlands", "Belgium", "Switzerland", "Austria", "Poland", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Greece", "Turkey", "Norway", "Sweden", "Finland", "Denmark", "Ireland", "Portugal", "United Kingdom"))
+      
+# Unir los datos de confianza con los datos del mapa
+europe <- europe %>%
+      left_join(data_confianza, by = c("region" = "country"))
+
+#Realizamos el gráfico
+ggplot(data = europe, aes(x = long, y = lat, group = group, fill = confianza_media)) +
+        geom_polygon(color = "black") +
+        coord_fixed(1.3) +
+        scale_fill_gradient(low = "darkgreen", high = "green",        na.value = "grey90", limits = c(0, 10),
+breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada","1", "2","3","4","5","6","7","8","9", "10= absolutamente")) + theme_minimal() +
+        theme(axis.title = element_blank(),
+              axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              panel.grid = element_blank()) + labs(title = "Confianza media en los políticos",
+             fill = "Nivel de confianza")    
+
+```
+
+### Edad y Confianza en los Políticos
+
+```{r}
+# Agrupar la edad en rangos
+BD_depurada$rangos_edad <- cut(BD_depurada$agea, breaks = c(18, 30, 40, 50, 60, 70, 80, 90), labels = c("18-29","30-39", "40-49", "50-59", "60-69", "70-79", "80-89"), right = FALSE)
+
+BD_depurada$rangos_edad <- factor(BD_depurada$rangos_edad)
+
+# Calcular la confianza media por grupo de edad
+confianza_media_pol <- BD_depurada %>%
+filter(!is.na(rangos_edad)) %>%
+group_by(rangos_edad) %>%
+summarise(confianza_media_pol = mean(trstplt, na.rm = TRUE))
+
+#Creamos gráfico
+      
+ggplot(confianza_media_pol, aes(x = rangos_edad, y = confianza_media_pol, fill = confianza_media_pol, group = 1)) + geom_bar(stat = "identity") +  # Gráfico de barras
+ #Línea de tendencia
+scale_fill_gradient(low = "pink", high = "purple",limits = c(0, 10),breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada", "1", "2","3","4","5","6","7","8","9", "10= absolutamente")) +
+scale_y_continuous(limits = c(0, 10)) + # Escala del eje 
+labs(title = "Confianza media en los políticos por grupo de edad",
+      x = "Grupo de edad",
+      y = "Nivel de confianza (1-10)") +
+      theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.title = element_blank())
+
+```
+
+```{r message=FALSE}
+
+```
+## Column {data-width="350"} {.tabset}
+---------------------------------------
+### Confianza en los Científicos
+```{r}
+data_confianza_C <- data.frame(
+  country = c("Austria", "Cyprus", "Germany", 
+  "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  confianza_media_C = c(6.89, 6.84, 7.01, 8.16, 6.41, 7.12, 6.59, 7.08, 7.15 )) 
+      
+# Obtener datos del mapa mundial
+europe2 <- map_data("world", region = c("Austria","Cyprus", "Germany", "Spain","Israel", "Latvia", "Poland",   "Serbia", "Sweden", "France", "Italy","Netherlands", "Belgium", "Switzerland", "Austria", "Poland", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Greece", "Turkey", "Norway", "Sweden", "Finland", "Denmark", "Ireland", "Portugal", "United Kingdom"))
+      
+# Unir los datos de confianza con los datos del mapa
+europe2 <- europe2 %>%
+      left_join(data_confianza_C, by = c("region" = "country"))
+
+#Realizamos el gráfico
+ggplot(data = europe2, aes(x = long, y = lat, group = group, fill = confianza_media_C)) +
+        geom_polygon(color = "black") +
+        coord_fixed(1.3) +
+        scale_fill_gradient(low = "darkgreen", high = "green",        na.value = "grey90", limits = c(0, 10),
+breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada","1", "2","3","4","5","6","7","8","9", "10= absolutamente")) + theme_minimal() +
+        theme(axis.title = element_blank(),
+              axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              panel.grid = element_blank()) +
+labs(title = "Confianza media en los científicos",
+  fill = "Nivel de confianza")    
+
+```
+
+### Edad y Confianza en los Científicos
+
+```{r}
+
+# Calcular la confianza media por grupo de edad
+confianza_media_cien <- BD_depurada %>%
+  filter(!is.na(rangos_edad)) %>%
+  group_by(rangos_edad) %>%
+summarise(confianza_media_cien = mean(trstsci, na.rm = TRUE))
+
+#Creamos gráfico
+      
+ggplot(confianza_media_cien, aes(x = rangos_edad, y = confianza_media_cien, fill = confianza_media_cien, group = 1)) + geom_bar(stat = "identity") +  # Gráfico de barras
+scale_fill_gradient(low = "pink", high = "purple",limits = c(0, 10),breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada","1", "2","3","4","5","6","7","8","9", "10= absolutamente")) +
+scale_y_continuous(limits = c(0, 10)) + # Escala del eje 
+labs(title = "Confianza media en los científicos por grupo de edad",
+      x = "Grupo de edad",
+      y = "Nivel de confianza (1-10)") +
+      theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.title = element_blank())
+
+```
+
+```{r message=FALSE}
+
+```
+
+Resumen {data-icon="fa-signal"}
+==============================================
+## Column {data-width="550"}
+
+### Resumen de las Varaibles
+```{r}
+
+# datos
+datos_R <- data.frame(
+  Variable = c("Uso Total", "Uso solo para Noticias", "Políticos", "Científicos", "Felicidad Percibida", "Salud Percibida"),
+  Media = c(4.81, 1.43, 3.04, 7.08, 6.93, 3.74)
+)
+
+# Separar datos para cada gráfico
+datos1R <- datos_R[1:2, ]
+datos2R <- datos_R[3:4, ]
+datos3R <- datos_R[5, ]
+datos4R <- datos_R[6, ]
+
+# UI para Shiny
+ui <- fluidPage(
+  titlePanel("Puntuaciones Medias"),
+  fluidRow(
+    column(6, plotOutput("grafico1", height = "250px")),
+    column(6, plotOutput("grafico2", height = "250px"))
+  ),
+  fluidRow(
+    column(6, plotOutput("grafico3", height = "200px")),
+    column(6, plotOutput("grafico4", height = "200px"))
+  )
+)
+
+# Servidor para Shiny
+server <- function(input, output) {
+  output$grafico1 <- renderPlot({
+    ggplot(datos1R, aes(x = Variable, y = Media, fill = Media)) +
+      geom_bar(stat = "identity",width = 0.5) +
+      geom_text(aes(label = Media), vjust = 0.5, position = position_stack(vjust = 0.5)) +
+      scale_fill_gradient(low = "yellow", high = "red2") +
+      theme_minimal() +
+      theme(legend.position = "none") +
+      labs(title = "Horas de uso de Internet", x = "Uso de internet", y = "Consumo en Horas")
+  })
+  
+  output$grafico2 <- renderPlot({
+    ggplot(datos2R, aes(x = Variable, y = Media, fill = Media)) +
+      geom_bar(stat = "identity",width = 0.5) +
+      geom_text(aes(label = Media), vjust = 0.5, position = position_stack(vjust = 0.5)) +
+      scale_fill_gradient(low = "greenyellow", high = "#00BC59") +
+      theme_minimal() +
+      theme(legend.position = "none") +
+      labs(title = "Nivel de Confianza", x = "Confianza en los científicos y políticos", y = "Puntuación Media (1-10)")
+  })
+  
+  output$grafico3 <- renderPlot({
+    ggplot(datos3R, aes(x = Variable, y = Media)) +
+      geom_bar(stat = "identity", fill = "skyblue",width = 0.2) +
+      geom_text(aes(label = Media), vjust = 0.5,position = position_stack(vjust = 0.5)) +
+      theme_minimal() +
+      labs(title = "Nivel de Felicidad Subjetiva", x = "Felicidad", y = "Puntuación Media (1-10)")
+  })
+  
+  output$grafico4 <- renderPlot({
+    ggplot(datos4R, aes(x = Variable, y = Media)) +
+      geom_bar(stat = "identity", fill = "violet",width = 0.2) +
+      geom_text(aes(label = Media), vjust = 0.5,position = position_stack(vjust = 0.5)) +
+      theme_minimal() +
+      labs(title = " Nivel de Salud Subjetiva", x = "Salud", y = "Puntuación Media (1-5)")
+  })
+}
+
+# Ejecutar la app Shiny
+shinyApp(ui = ui, server = server)
