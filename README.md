@@ -10,6 +10,7 @@ La base de datos se ha obtenido de la Encuesta Social Europea (ESS). Este organi
 
 ## Objetivos del Proyecto de Ciencia de Datos
 El objetivo principal de este proyecto es el de estudiar la distribución de las variables de "Tiempo de Uso de Internet en General" y el "Tiempo Dedicado a Consultar Noticias", en función de las principales variables sociodemográficas: edad, género, nivel de estudio y país. Además, como objetivos específicos, se pretende evaluar las posibles relaciones entre estas dos variables y las demás seleccionadas.
+El principal interés de este trabajo es estudiar los patrones de consumo de internet de las personas en diferentes países europeos, así como evaluar la confianza que los ciudadanos tienen en los políticos y científicos.
 
 ## Descripción de las vairables Socio-demográficas.
 
