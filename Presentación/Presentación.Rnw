@@ -1,0 +1,240 @@
+\documentclass{beamer}
+
+\title{RESUMEN DEL PROYECTO}
+\author{Alberto Brun Gascón}
+\date{\today}
+
+\begin{document}
+\begin{frame}
+\frametitle{Variables del proyecto}
+A continuación se presentan las variables seleccionadas.
+
+\begin{block}{Variables Principales}
+\begin{itemize}
+\item Horas de consumo de Internet para el uso personal y trabajo. 
+\item Horas de consumo de Internet para visualizar, leer y escuchar noticias.
+\item Nivel de confianza en los políticos (0-10).
+\item Nivel de confianza en los científicos(0-10).
+\end{itemize}
+
+\begin{block}{Variables secundarias}
+\begin{itemize}
+\item Nivel de felicidad subjetiva (0-10). 
+\item Nivel de salud subjetiva(1-5).
+\end{itemize}
+
+\begin{block}{Variables sociodemográficas}
+\begin{itemize}
+\item Género (Hombre, Mujer).
+\item Nivel de estudios: Primaria, Secundaria Inf., Secundaria Sup., Bach., F.P., Grado Universitario, Máster o Doctorado.
+\item Paises: Austria, Chipre, Alemania, España, Israel, Letonia, Polonia,Serbia, Suecia.
+\item Edad de los participantes.
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Descripción de la variable país}
+
+\begin{table}[ht]
+\caption{Datos demográficos de algunos países}
+\centering
+\begin{tabular}{lccc}
+\hline
+País & Población (n) & Porcentaje (\%) \\
+\hline
+Austria (AT) & 875 & 9.07 \\
+Chipre (CY) & 8725 & 3.96 \\
+Alemania (DE) & 2283 & 39.53 \\
+España (ES) & 1308 & 10.34 \\
+Israel (IL) & 1023 & 5.93 \\
+Letonia (LV) & 2065 & 4.63 \\
+Polonia (PL) & 1505 & 9.35 \\
+Serbia (RS) & 2287 & 6.82 \\
+Suecia (SE) & 2287 & 10.36 \\
+\hline
+\end{tabular}
+
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Descripción de las variable Nivel educativo}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        Nivel de educativo & Total (\%) & Hombres (\%) & Mujeres (\%) \\
+        \hline
+        Primaria & 3.94 & 4.10 & 3.84 \\
+        Secundaria Inferior & 11.38 & 11.50 & 11.24 \\
+        Secundaria Superior & 21.64 & 21.40 & 21.33 \\
+        Bachiller & 11.65 & 11.86 & 11.63 \\
+        Formación Profesional & 18.84 & 17.78 & 19.89 \\
+        Grado Universitario & 13.40 & 14.45 & 12.47 \\
+        Máster/Doctorado & 19.15 & 18.91 & 19.60 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Descripción de las variables numéricas}
+
+\begin{table}[ht]
+\centering
+\caption{Estadísticas descriptivas}
+\label{tab:estadisticas}
+\begin{tabular}{lcccccccc}
+  \hline
+ & Min. & 1ºQ & Mediana & Media & 3Q & Max & DT & NAs \\ 
+  \hline
+Edad & 15.00 & 34.00 & 50.00 & 49.48 & 64.00 & 90.00 & 18.70 & 742 \\ 
+  horas\_internet & 0.00 & 2.00 & 3.83 & 4.81 & 7.00 & 24.00 & 3.82 & 3227 \\ 
+  noticias\_internet & 0.00 & 0.50 & 1.00 & 1.43 & 2.00 & 24.00 & 1.62 & 376 \\ 
+  Confianza\_Políticos & 0.00 & 1.00 & 3.00 & 3.04 & 5.00 & 10.00 & 2.48 & 165 \\ 
+  Confianza\_Científicos & 0.00 & 6.00 & 8.00 & 7.08 & 9.00 & 10.00 & 2.32 & 151 \\ 
+  Felicidad & 0.00 & 6.00 & 7.00 & 6.93 & 8.00 & 10.00 & 2.14 & 99 \\ 
+  Salud & 1.00 & 3.00 & 4.00 & 3.74 & 4.00 & 5.00 & 0.88 & 65 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\begin{frame}
+\frametitle{Objetivo del proyecto}
+
+El principal objetivo de este proyecto ha sido el de analizar cómo se distribuyen las principales variables del estudio en relación con las características sociodemográficas, como la edad, el género, el nivel educativo o el país.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Resultados principales}
+\begin{block}{Consumo de internet}
+A medida que aumenta la edad aumenta el consumo de internet en la muestra.
+<<echo=FALSE,results='asis'>>=
+BD_depurada <- read_csv("BD_depurada.csv")
+BD_depurada <- subset(BD_depurada, !is.na(gndr))
+
+
+# Se agrupan los datos por décadas
+      datos <- BD_depurada  %>%
+        mutate(decada = floor(agea / 10) * 10) %>%
+        group_by(decada) %>%
+        summarise(horas_internet = mean(horas_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos <- datos[!is.na(datos$decada), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos$decada <- as.numeric(datos$decada)
+      
+#Generamos el gráfico
+ggplot(datos, aes(x = decada, y = horas_internet)) +
+geom_line(color = "brown", size= 1.2) +
+labs(title = "Consumo Medio de Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA), panel.grid.minor = element_blank(), axis.title = element_text(size = 14), axis.text = element_text(size = 12), plot.title = element_text(hjust = 0.5, face = "bold"))
+@
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Resultados principales}
+\begin{block}{Consumo de internet}
+Sin embargo, a medida que aumenta la edad aumenta el consumo de internet para la búsqueda de internet.
+
+<<echo=FALSE,results='asis'>>=
+
+# Se agrupan los datos por décadas
+      datos2 <- BD_depurada  %>%
+      mutate(decada2 = floor(agea / 10) * 10) %>%
+      group_by(decada2) %>%  summarise(noticias_internet =        mean(noticias_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos2 <- datos2[!is.na(datos2$decada2), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos2$decada2 <- as.numeric(datos2$decada2)
+      
+#Generamos el gráfico
+      ggplot(datos2, aes(x = decada2, y = noticias_internet)) +
+        geom_line(color = "brown", size= 1.2) +
+        labs(title = "Consumo de Noticias en Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA),panel.grid.minor = element_blank(), axis.title = element_text(size = 14),axis.text = element_text(size = 12),plot.title = element_text(hjust = 0.5, face = "bold"))
+@
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultados principales}
+\begin{block}{Confianza en los políticos}
+Se observa que los ciudadanos de todos los países participantes su confianza en los políticos es baja o muy baja.
+<<echo=FALSE,results='asis'>>=
+      
+data_confianza <- data.frame(
+  country = c("Austria", "Cyprus", "Germany", "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  confianza_media = c(3.76, 3.02, 1.93, 1.94, 2.41, 2.21, 1.88, 2.38, 4.10)
+)
+
+ggplot(data_confianza, aes(x = country, y = confianza_media)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_confianza$country))) +
+  labs(title = "Confianza media por país", x = "País", y = "Confianza media") + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = confianza_media), vjust = -0.5, size=2)
+@
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultados principales}
+\begin{block}{Confianza en los científos}
+
+Por el contrario,la mayoría de las personas confían en los científicos, independientemente del país.
+<<echo=FALSE,results='asis'>>=
+data_confianza_C <- data.frame(
+  countries = c("Austria", "Cyprus", "Germany", 
+  "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  confianza_media_C = c(6.89, 6.84, 7.01, 8.16, 6.41, 7.12, 6.59, 7.08, 7.15 ))
+
+ggplot(data_confianza_C, aes(x = countries, y = confianza_media_C)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_confianza_C$countries))) +
+  labs(title = "Confianza media por país", x = "País", y = "Confianza media") + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = confianza_media_C), vjust = -0.5, size=2)
+@
+
+\begin{frame}
+\frametitle{Discusión y Conclusión}
+begin{itemize}
+  \item \textbf{Uso de Internet y Edad:} El uso general de Internet tiende a disminuir con la edad. Sin embargo, a medida que aumenta la edad, también aumenta el uso de Internet para consultar noticias. Esto podría deberse a que, con la edad, las personas desarrollan más interés en mantenerse informadas.
+  \item \textbf{Confianza en Políticos y Científicos:} Se ha observado que los políticos tienen una media de confianza en torno a 3 sobre 10, mientras que los científicos reciben una puntuación de 7 sobre 10. Estos datos plantean cuestionamientos sobre la confianza que los ciudadanos tienen en los representantes de la democracia.
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{FIN}
+<<echo=FALSE,results='asis'>>=
+ggplot() +
+  geom_text(aes(x = 0.5, y = 0.5, label = "GRACIAS",), size = 20, color = "darkgreen") +
+  theme_void()
+@
+
+
+\end{frame}
+
+\end{document}
