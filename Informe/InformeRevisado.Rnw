@@ -1,0 +1,287 @@
+\documentclass{article}
+\usepackage{multicol}
+\usepackage{amsmath}
+
+\usepackage[spanish]{babel}
+%\usepackage[T1]{fontec}
+
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  total={170mm,257mm},
+  left=20mm,
+  top=20mm,
+  }
+
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\section*{Introducción y Objetivos del proyecto}
+
+El principal interés de este trabajo es estudiar los patrones de consumo de internet de las personas en diferentes países europeos, así como evaluar la confianza que los ciudadanos tienen en los políticos y científicos. Para ello, se han utilizado los datos obtenidos por la Encuesta Social Europea (ESS), una infraestructura de investigación europea que proporciona datos de libre acceso.
+
+En este sentido, el principal objetivo de este proyecto ha sido el de analizar cómo se distribuyen las principales variables del estudio en relación con las características sociodemográficas, como la edad, el género, el nivel educativo o el país.
+
+\section*{Variables estudiadas}
+Las principales variables estudiadas han sido:
+\begin{itemize}
+    \item Horas de consumo de Internet para el uso personal y trabajo.
+    \item Horas de consumo de Internet para visualizar, leer y escuchar noticias.
+    \item Nivel de confianza en los políticos.
+    \item Nivel de confianza en los científicos.
+\end{itemize}
+
+Estas dos últimas variables confianza en los políticos y científicos, se codificaron en una escala del 1 al 10, donde 1 representa ‘nada’ y 10 significa ‘absolutamente’.
+
+También se incluyeron otras variables secundarias como:
+\begin{itemize}
+    \item Nivel de Felicidad Subjetiva.
+    \item Salud Subjetiva.
+\end{itemize}
+
+En cuanto a la variable felicidad, se codificó en una escala del 0 al 10, donde 0 indica ‘extremadamente infeliz’ y 10 corresponde a completamente feliz. Por último, la variable ‘salud’ se codificó en una escala del 1 al 5, donde 1 representa ‘muy mala’ y 5 corresponde a ‘muy buena
+
+\subsection*{Resumen de las Variables Numéricas}
+\begin{table}[ht]
+\centering
+\caption{Estadísticas descriptivas}
+\label{tab:estadisticas}
+\begin{tabular}{lcccccccc}
+  \hline
+ & Min. & 1ºQ & Mediana & Media & 3Q & Max & DT & NAs \\ 
+  \hline
+Edad & 15.00 & 34.00 & 50.00 & 49.48 & 64.00 & 90.00 & 18.70 & 742 \\ 
+  horas\_internet & 0.00 & 2.00 & 3.83 & 4.81 & 7.00 & 24.00 & 3.82 & 3227 \\ 
+  noticias\_internet & 0.00 & 0.50 & 1.00 & 1.43 & 2.00 & 24.00 & 1.62 & 376 \\ 
+  Confianza\_Políticos & 0.00 & 1.00 & 3.00 & 3.04 & 5.00 & 10.00 & 2.48 & 165 \\ 
+  Confianza\_Científicos & 0.00 & 6.00 & 8.00 & 7.08 & 9.00 & 10.00 & 2.32 & 151 \\ 
+  Felicidad & 0.00 & 6.00 & 7.00 & 6.93 & 8.00 & 10.00 & 2.14 & 99 \\ 
+  Salud & 1.00 & 3.00 & 4.00 & 3.74 & 4.00 & 5.00 & 0.88 & 65 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\subsection*{Variables Categóricas}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        Nivel de educativo & Total (\%) & Hombres (\%) & Mujeres (\%) \\
+        \hline
+        Primaria & 3.94 & 4.10 & 3.84 \\
+        Secundaria Inferior & 11.38 & 11.50 & 11.24 \\
+        Secundaria Superior & 21.64 & 21.40 & 21.33 \\
+        Bachiller & 11.65 & 11.86 & 11.63 \\
+        Formación Profesional & 18.84 & 17.78 & 19.89 \\
+        Grado Universitario & 13.40 & 14.45 & 12.47 \\
+        Máster/Doctorado & 19.15 & 18.91 & 19.60 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Se observa que el nivel de estudios mayoritario es el de secundaria, seguido por el de Máster/Doctorado. También se observa que el nivel de estudios es similar en hombres y mujeres.
+
+\begin{table}[ht]
+\caption{Datos demográficos de algunos países}
+\centering
+\begin{tabular}{lccc}
+\hline
+País & Población (n) & Porcentaje (\%) \\
+\hline
+Austria (AT) & 875 & 9.07 \\
+Chipre (CY) & 8725 & 3.96 \\
+Alemania (DE) & 2283 & 39.53 \\
+España (ES) & 1308 & 10.34 \\
+Israel (IL) & 1023 & 5.93 \\
+Letonia (LV) & 2065 & 4.63 \\
+Polonia (PL) & 1505 & 9.35 \\
+Serbia (RS) & 2287 & 6.82 \\
+Suecia (SE) & 2287 & 10.36 \\
+\hline
+\end{tabular}
+\end{table}
+
+Se observa que la mayoría de los datos pertenecen a personas que viven en Alemania, seguida por España. Por tanto, al interpretar los resultados, es importante tener en cuenta este desequilibrio.
+
+\section*{Resultados}
+En primer lugar, se puede observar que a medida que aumenta la edad de la muestra, disminuye el número de horas que las personas utilizan Internet, tanto para uso personal como laboral. Asimismo, se observa que las personas alrededor de los 20 años son las que más horas consumen internet.
+
+<<echo=FALSE,fig=TRUE>>=
+library(readr)
+library(tidyverse)
+BD_depurada <- read_csv("BD_depurada.csv")
+BD_depurada <- subset(BD_depurada, !is.na(gndr))
+
+
+# Se agrupan los datos por décadas
+      datos <- BD_depurada  %>%
+        mutate(decada = floor(agea / 10) * 10) %>%
+        group_by(decada) %>%
+        summarise(horas_internet = mean(horas_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos <- datos[!is.na(datos$decada), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos$decada <- as.numeric(datos$decada)
+      
+#Generamos el gráfico
+ggplot(datos, aes(x = decada, y = horas_internet)) +
+geom_line(color = "brown", size= 1.2) +
+labs(title = "Consumo Medio de Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA), panel.grid.minor = element_blank(), axis.title = element_text(size = 14), axis.text = element_text(size = 12), plot.title = element_text(hjust = 0.5, face = "bold"))
+@
+Por el contrario, se observa que a medida que aumenta la edad de la muestra también aumenta el tiempo medio de uso Internet para la consulta de notcicas y búsquedad de información.
+
+<<echo=FALSE,fig=TRUE>>=
+
+# Se agrupan los datos por décadas
+      datos2 <- BD_depurada  %>%
+      mutate(decada2 = floor(agea / 10) * 10) %>%
+      group_by(decada2) %>%  summarise(noticias_internet =        mean(noticias_internet, na.rm = TRUE))
+      
+# Se eliminan valores NA en la columna 'decada'
+      datos2 <- datos2[!is.na(datos2$decada2), ]
+      
+# Nos aseguramos que 'decada' sea numérico
+      datos2$decada2 <- as.numeric(datos2$decada2)
+      
+#Generamos el gráfico
+      ggplot(datos2, aes(x = decada2, y = noticias_internet)) +
+        geom_line(color = "brown", size= 1.2) +
+        labs(title = "Consumo de Noticias en Internet según edad 2023",
+             x = "Años",
+             y = "Horas al día") +
+scale_x_continuous(breaks = seq(min(datos$decada), max(datos$decada), by = 10)) +
+theme_minimal() +
+theme(panel.background = element_rect(fill = "white", color = NA),panel.grid.minor = element_blank(), axis.title = element_text(size = 14),axis.text = element_text(size = 12),plot.title = element_text(hjust = 0.5, face = "bold"))
+@
+
+Por otro lado, en lo que respecta a la confianza que las personas depositan en los políticos, se observa que la mayoría tiene una confianza baja o muy baja en ellos, independientemente de su país de origen. Suecia es el país donde los ciudadanos confían más en sus políticos, otorgándoles una puntuación de 4,1 sobre 10.
+
+<<echo=FALSE,fig=TRUE>>=
+      
+data_confianza <- data.frame(
+  country = c("Austria", "Cyprus", "Germany", "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  confianza_media = c(3.76, 3.02, 1.93, 1.94, 2.41, 2.21, 1.88, 2.38, 4.10)
+)
+
+ggplot(data_confianza, aes(x = country, y = confianza_media)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_confianza$country))) +
+  labs(title = "Confianza media por país", x = "País", y = "Confianza media") + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = confianza_media), vjust = -0.5, size=2)
+@
+Lo mismo sucede para la edad, apenas existe diferencia entre edad y confianza en los políticos.
+
+<<echo=FALSE,fig=TRUE>>=
+BD_depurada$rangos_edad <- cut(BD_depurada$agea, breaks = c(18, 30, 40, 50, 60, 70, 80, 90), labels = c("18-29","30-39", "40-49", "50-59", "60-69", "70-79", "80-89"), right = FALSE)
+
+BD_depurada$rangos_edad <- factor(BD_depurada$rangos_edad)
+
+# Calcular la confianza media por grupo de edad
+confianza_media_pol <- BD_depurada %>%
+filter(!is.na(rangos_edad)) %>%
+group_by(rangos_edad) %>%
+summarise(confianza_media_pol = mean(trstplt, na.rm = TRUE))
+
+#Creamos gráfico
+      
+ggplot(confianza_media_pol, aes(x = rangos_edad, y = confianza_media_pol, fill = confianza_media_pol, group = 1)) + geom_bar(stat = "identity") +  # Gráfico de barras
+ #Línea de tendencia
+scale_fill_gradient(low = "pink", high = "purple",limits = c(0, 10),breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada", "1", "2","3","4","5","6","7","8","9", "10= absolutamente")) +
+scale_y_continuous(limits = c(0, 10)) + # Escala del eje 
+labs(title = "Confianza media en los políticos por grupo de edad",
+      x = "Grupo de edad",
+      y = "Nivel de confianza (1-10)") +
+      theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.title = element_blank())
+@
+
+Por otro lado, ocurre lo contrario en cuanto a la confianza en los científicos. La mayoría de las personas confían en los científicos, independientemente del país. Según la muestra, los españoles son quienes más suelen confiar en los científicos, otorgándoles una puntuación de 8,16 sobre 10.
+<<echo=FALSE,fig=TRUE>>=
+data_confianza_C <- data.frame(
+  countries = c("Austria", "Cyprus", "Germany", 
+  "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  confianza_media_C = c(6.89, 6.84, 7.01, 8.16, 6.41, 7.12, 6.59, 7.08, 7.15 ))
+
+ggplot(data_confianza_C, aes(x = countries, y = confianza_media_C)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_confianza_C$countries))) +
+  labs(title = "Confianza media por país", x = "País", y = "Confianza media") + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = confianza_media_C), vjust = -0.5, size=2)
+
+@
+En cuanto a la edad, se observa que la confianza es similar en todas las edades de la muestra
+
+<<echo=FALSE>>=
+
+# Calcular la confianza media por grupo de edad
+confianza_media_cien <- BD_depurada %>%
+  filter(!is.na(rangos_edad)) %>%
+  group_by(rangos_edad) %>%
+summarise(confianza_media_cien = mean(trstsci, na.rm = TRUE))
+
+#Creamos gráfico
+      
+ggplot(confianza_media_cien, aes(x = rangos_edad, y = confianza_media_cien, fill = confianza_media_cien, group = 1)) + geom_bar(stat = "identity") +  # Gráfico de barras
+scale_fill_gradient(low = "pink", high = "purple",limits = c(0, 10),breaks = c(0,1,2,3,4,5,6,7,8,9, 10), labels = c("0= nada","1", "2","3","4","5","6","7","8","9", "10= absolutamente")) +
+scale_y_continuous(limits = c(0, 10)) + # Escala del eje 
+labs(title = "Confianza media en los científicos por grupo de edad",
+      x = "Grupo de edad",
+      y = "Nivel de confianza (1-10)") +
+      theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.title = element_blank())
+@
+Por últmo, en cuanto al nivel de felicidad, la media de los participantes de cada país indicó que su felicidad es buena o bastante buena. El país cuyos ciudadanos informaron mayor felicidad fue Austria, mientras que el país con la menor felicidad reportada fue Suecia con una puntuación de 3,52 de 10 puntos.
+<<echo=FALSE>>=
+
+data_felicidad <- data.frame(
+  country = c("Austria", "Cyprus", "Germany", 
+  "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  felicidad_media = c(7.26, 6.51, 7.02, 7.07, 7.10, 6.48, 6.52, 6.45, 6.45 )) 
+
+ggplot(data_felicidad, aes(x = country, y = felicidad_media)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_felicidad$country))) +
+  labs(title = "Felicidad media por país", x = "País", y = "Felicidad media") + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = felicidad_media), vjust = -0.5, size=2)
+@
+
+En relación a la salud, la mayoría de los participantes informaron un nivel de salud bueno o bastante bueno. Sin embargo, se observa que Suecia y Letonia son los países con una menor puntuación en el nivel subjetivo de salud, alrededor de 3,5 sobre 5.
+
+<<echo=FALSE>>=
+
+data_salud <- data.frame(
+  country = c("Austria", "Cyprus", "Germany", 
+  "Spain", "Israel", "Latvia", "Poland", "Serbia", "Sweden"),
+  salud_media = c(4.09, 4.24, 3.64, 3.64, 4.18, 3.50, 3.55, 3.52, 3.52 )) 
+
+ggplot(data_salud, aes(x = country, y = salud_media)) +
+  geom_bar(stat = "identity", fill = rainbow(length(data_salud$country))) +
+  labs(title = "Salud media por país", x = "País", y = "Salud media") + scale_y_continuous(limits = c(0, 5), breaks = seq(1, 5, by = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = salud_media), vjust = -0.5, size=2)
+
+@
+
+\section*{Discusion y Conclusión}
+Por tanto, a la vista de los resultados, los principales hallazgos extraídos del análisis descriptivo de la muestra seleccionada son:
+
+\begin{itemize}
+  \item \textbf{Uso de Internet y Edad:} El uso general de Internet tiende a disminuir con la edad. Sin embargo, a medida que aumenta la edad, también aumenta el uso de Internet para consultar noticias. Esto podría deberse a que, con la edad, las personas desarrollan más interés en mantenerse informadas.
+  \item \textbf{Confianza en Políticos y Científicos:} Se ha observado que los políticos tienen una media de confianza en torno a 3 sobre 10, mientras que los científicos reciben una puntuación de 7 sobre 10. Estos datos plantean cuestionamientos sobre la confianza que los ciudadanos tienen en las instituciones democráticas y presentan un desafío para mejorar la credibilidad de los sistemas democráticos.
+  \item \textbf{Felicidad y Salud:} En general, las personas indicaron que su nivel de salud y felicidad era bueno o bastante bueno.
+\end{itemize}
+
+
+\end{document}
